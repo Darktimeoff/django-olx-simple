@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log files
+*.log
+
+# Generated media files
+media/
+
+# Static files (CSS, JavaScript, images)
+static/
+
+# Database files
+*.db
+*.sqlite3
+
+# Secret settings
+secret.json
+
+# Django generated files
+*.pyc
+*.pyo
+*.pyd
+*.cache
+*.egg-info
+*.egg
+build/
+dist/
+__pycache__
+*.pyz
+*.pywz
+
+# Environment files
+.env
+
+# Local development files
+venv/
+.vscode/
+*.idea/
+
+# Dependency directories
+node_modules/
+bower_components/
