@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 
+
 class Ad(models.Model):
     class Meta:
         verbose_name_plural = 'Ads'
@@ -13,10 +14,11 @@ class Ad(models.Model):
 
     def __str__(self):
         return self.slug
-    
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name, allow_unicode=True)
         super(Ad, self).save(*args, **kwargs)
+
 
 class Category(models.Model):
     class Meta:
@@ -27,7 +29,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.slug
-    
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name, allow_unicode=True)
         super(Category, self).save(*args, **kwargs)
