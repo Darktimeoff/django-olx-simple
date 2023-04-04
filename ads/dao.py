@@ -23,3 +23,6 @@ class CategoriesDao(Dao):
 class AdsDao(Dao):
     def __init__(self):
         super().__init__(Ad)
+
+    def get_all(self):
+        return super().get_all().select_related('category', 'author')

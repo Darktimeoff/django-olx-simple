@@ -2,6 +2,20 @@ from rest_framework import serializers
 from ads.models import Ad, Category
 
 class AdListSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(
+        source='author.first_name', 
+        read_only=True,
+    )
+
+    author_id = serializers.IntegerField()
+
+    category = serializers.CharField(
+        source='category.name', 
+        read_only=True,
+    )
+
+    category_id = serializers.IntegerField()
+
     class Meta:
         model = Ad
         fields = '__all__'

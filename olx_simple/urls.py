@@ -16,11 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-import ads.views
+from django.conf.urls.static import static
+from ads.views import home
+from olx_simple import settings
 
 urlpatterns = [
-    path('', ads.views.home),
+    path('', home),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/', include('ads.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static('/media/', document_root=settings.MEDIA_ROOT)
