@@ -34,3 +34,27 @@ class DetailCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
+
+class UpdateCategorySerializer(serializers.ModelSerializer):
+    slug = serializers.SlugField(read_only=True, required=False)
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+class UpdateAdSerializer(serializers.ModelSerializer):
+    slug = serializers.SlugField(read_only=True, required=False)
+
+    class Meta:
+        model = Ad
+        fields = '__all__'
+
+class DeleteCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+class DeleteAdSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ad
+        fields = '__all__'
