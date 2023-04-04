@@ -16,7 +16,7 @@ def home(request: HttpRequest) -> JsonResponse:
 @api_view(['POST'])
 def upload_image(request: HttpRequest, pk: int) -> JsonResponse:
     image = request.FILES.get('image', None)
-    print('upload_image', image)
+
     if not image:
         return JsonResponse({"status": "error", "message": "No image"})
     
