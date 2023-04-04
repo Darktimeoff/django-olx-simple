@@ -5,6 +5,7 @@ ads = [
     path('ad/', views.AdsListView.as_view()),
     path('ad/create/', views.CreateAdView.as_view()),
     path('ad/<int:pk>/', views.DetailAdView.as_view()),
+    path('ad/<int:pk>/upload_image/', views.upload_image),
     path('ad/<int:pk>/update/', views.UpdateAdView.as_view()),
     path('ad/<int:pk>/delete/', views.DeleteAdView.as_view()),
 ]

@@ -62,7 +62,7 @@ class Ad(models.Model):
     class Meta:
         verbose_name_plural = 'Ads'
 
-    image = models.ImageField(upload_to='ads/')
+    image = models.ImageField(upload_to='ads/', blank=True, null=True)
 
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)

@@ -1,5 +1,6 @@
 from django.http import HttpRequest, JsonResponse
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.decorators import api_view
 
 from .container import ads_dao, categories_dao
 from .serializers import (AdListSerializer, CategoryListSerializer,
@@ -11,6 +12,22 @@ from .serializers import (AdListSerializer, CategoryListSerializer,
 
 def home(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"status": "ok"})
+
+@api_view(['POST'])
+def upload_image(request: HttpRequest, pk: int) -> JsonResponse:
+    image = request.FILES.get('image', None)
+    print('upload_image', image)
+    if not image:
+        return JsonResponse({"status": "error", "message": "No image"})
+    
+    try:
+        ad = ads_dao.save_image(pk, image)
+
+        return JsonResponse(DetailAdSerializer(ad).data)
+    except ads_dao.DoesNotExistError():
+        return JsonResponse({"status": "error", "message": "Ad does not exist"})
+
+
 
 
 class AdsListView(ListAPIView):

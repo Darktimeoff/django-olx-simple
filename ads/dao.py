@@ -13,7 +13,7 @@ class Dao:
     
     def get_by_id(self, id: int):
         """raise DoesNotExist exception if not found"""
-        return self.query.get(id)
+        return self.query.get(pk=id)
     
 
 class CategoriesDao(Dao):
@@ -24,5 +24,16 @@ class AdsDao(Dao):
     def __init__(self):
         super().__init__(Ad)
 
+    def DoesNotExistError(self):
+        return Ad.DoesNotExist
+
     def get_all(self):
         return super().get_all().select_related('category', 'author')
+    
+    def save_image(self, id: int, image):
+        ad: Ad = self.get_by_id(id)
+
+        ad.image = image
+        ad.save()
+
+        return ad
