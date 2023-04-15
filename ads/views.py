@@ -1,13 +1,17 @@
 from django.http import HttpRequest, JsonResponse
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter
 
-from .container import ads_dao, categories_dao
+from .container import ads_dao, categories_dao,user_dao
 from .serializers import (AdListSerializer, CategoryListSerializer,
                           CreateAdSerializer, CreateCategorySerializer,
                           DeleteAdSerializer, DeleteCategorySerializer,
                           DetailAdSerializer, DetailCategorySerializer,
-                          UpdateAdSerializer, UpdateCategorySerializer)
+                          UpdateAdSerializer, UpdateCategorySerializer,
+                          UserSerializer, CreateUserSerializer,
+                          UpdateUserSerializer
+                        )
 
 
 def home(request: HttpRequest) -> JsonResponse:
@@ -32,12 +36,16 @@ def upload_image(request: HttpRequest, pk: int) -> JsonResponse:
 
 class AdsListView(ListAPIView):
     queryset = ads_dao.get_all()
+    filter_backends = [OrderingFilter]
+    ordering = '-price'
     serializer_class = AdListSerializer
 
 
 class CategoriesListView(ListAPIView):
     queryset = categories_dao.get_all()
     serializer_class = CategoryListSerializer
+    filter_backends = [OrderingFilter]
+    ordering = 'name'
 
 
 class CreateAdView(CreateAPIView):
@@ -83,4 +91,22 @@ class DeleteCategoryView(DestroyAPIView):
     serializer_class = DeleteCategorySerializer
     lookup_field = 'pk'
 
-    
+class ListUserView(ListAPIView):
+    queryset = user_dao.get_all()
+    serializer_class = UserSerializer
+
+class DetailUserView(RetrieveAPIView):
+    queryset = user_dao.get_all()
+    serializer_class = UserSerializer
+
+class CreateUserView(CreateAPIView):
+    queryset = user_dao.get_all()
+    serializer_class = CreateUserSerializer
+
+class UpdateUserView(UpdateAPIView):
+    queryset = user_dao.get_all()
+    serializer_class = UpdateUserSerializer
+
+class DeleteUserView(DestroyAPIView):
+    queryset = user_dao.get_all()
+    serializer_class = CreateUserSerializer

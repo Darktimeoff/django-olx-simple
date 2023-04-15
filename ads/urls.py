@@ -18,4 +18,12 @@ cat = [
     path('cat/<int:pk>/delete/', views.DeleteCategoryView.as_view()),
 ]
 
-urlpatterns = ads + cat
+user = [
+    path('user/', views.ListUserView.as_view()),
+    path('user/create/', views.CreateUserView.as_view()),
+    path('user/<int:pk>/', views.DetailUserView.as_view()),
+    path('user/<int:pk>/update/', views.UpdateUserView.as_view()),
+    path('user/<int:pk>/delete/', views.DeleteUserView.as_view()),
+]
+
+urlpatterns = ads + cat + user

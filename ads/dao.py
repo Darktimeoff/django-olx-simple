@@ -1,12 +1,15 @@
 from django.db.models import Model
 from django.db.models.manager import BaseManager
-from ads.models import Category, Ad
+from ads.models import Category, Ad, User, Location
 
 class Dao:
     query: BaseManager[Model]
 
-    def __init__(self, model):
+    def __init__(self, model, ordering=None):
         self.query = model.objects.all()
+        if ordering:
+            self.query = self.query.order_by(ordering)
+        
 
     def get_all(self):
         return self.query.all()
@@ -37,3 +40,25 @@ class AdsDao(Dao):
         ad.save()
 
         return ad
+    
+class UserDao(Dao):
+    def __init__(self, ordering=None):
+        super().__init__(User, ordering)
+
+    def get_all(self):
+        return super().get_all().select_related('location')
+    
+    def save_location(self, id: int, location: Location):
+        user: User = self.get_by_id(id)
+
+        user.location = location
+        user.save()
+
+        return user
+    
+class LocationDao(Dao):
+    def __init__(self):
+        super().__init__(Location)
+
+    def get_by_name(self, name: str):
+        return self.query.get(name=name)
