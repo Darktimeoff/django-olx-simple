@@ -1,16 +1,18 @@
 from django.http import HttpRequest, JsonResponse
+from django.db.models import Count, Q
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.decorators import api_view
 from rest_framework.filters import OrderingFilter
+from rest_framework.viewsets import ModelViewSet
 
-from .container import ads_dao, categories_dao,user_dao
+from .container import ads_dao, categories_dao,user_dao, location_dao
 from .serializers import (AdListSerializer, CategoryListSerializer,
                           CreateAdSerializer, CreateCategorySerializer,
                           DeleteAdSerializer, DeleteCategorySerializer,
                           DetailAdSerializer, DetailCategorySerializer,
                           UpdateAdSerializer, UpdateCategorySerializer,
                           UserSerializer, CreateUserSerializer,
-                          UpdateUserSerializer
+                          UpdateUserSerializer, UserListSerializer, LocationDetailSerializer
                         )
 
 
@@ -39,6 +41,36 @@ class AdsListView(ListAPIView):
     filter_backends = [OrderingFilter]
     ordering = '-price'
     serializer_class = AdListSerializer
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        categories = request.GET.getlist('category', None)
+        text = request.GET.get('text', None)
+        location = request.GET.get('location', None)
+        price_from  = request.GET.get('price_from', None)
+        price_to = request.GET.get('price_to', None)
+
+        if price_from:
+            price_from = int(price_from)
+
+        if price_to:
+            price_to = int(price_to)
+
+
+        if categories:
+            categories = list(map(int, categories))
+            self.queryset = ads_dao.get_by_categories(categories)
+
+        if text:
+            self.queryset = ads_dao.search_by_name(text)
+
+        if location:
+            self.queryset = ads_dao.get_by_location(location)
+
+        if price_from or price_to:
+            self.queryset = ads_dao.get_by_price(price_from, price_to)
+        
+
+        return super().get(request, *args, **kwargs)
 
 
 class CategoriesListView(ListAPIView):
@@ -93,7 +125,16 @@ class DeleteCategoryView(DestroyAPIView):
 
 class ListUserView(ListAPIView):
     queryset = user_dao.get_all()
-    serializer_class = UserSerializer
+    serializer_class = UserListSerializer
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        annotate = {
+            'total_ads': Count('ads', filter=Q(ads__is_published=True), distinct=True),
+        }
+
+        self.queryset = self.queryset.annotate(**annotate)
+
+        return super().get(request, *args, **kwargs)
 
 class DetailUserView(RetrieveAPIView):
     queryset = user_dao.get_all()
@@ -110,3 +151,7 @@ class UpdateUserView(UpdateAPIView):
 class DeleteUserView(DestroyAPIView):
     queryset = user_dao.get_all()
     serializer_class = CreateUserSerializer
+
+class LocationViewset(ModelViewSet):
+    queryset = location_dao.get_all()
+    serializer_class = LocationDetailSerializer

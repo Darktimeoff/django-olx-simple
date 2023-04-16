@@ -1,6 +1,7 @@
 from django.db.models import Model
 from django.db.models.manager import BaseManager
 from ads.models import Category, Ad, User, Location
+from django.db.models import Q
 
 class Dao:
     query: BaseManager[Model]
@@ -33,6 +34,29 @@ class AdsDao(Dao):
     def get_all(self):
         return super().get_all().select_related('category', 'author')
     
+    def get_by_categories(self, categories: list[int]):
+        return self.query.filter(category_id__in=categories).select_related('category', 'author')
+    
+    def search_by_name(self, name: str):
+        return self.query.filter(name__icontains=name).select_related('category', 'author')
+    
+    def get_by_location(self, location: str):
+        return self.query.filter(author__location__name__icontains=location).select_related('category', 'author')
+    
+    def get_by_price(self, price_from: int = 0, price_to: int = 0):
+        price_q = None
+
+        if price_from and not price_to:
+            price_q = Q(price__gte=price_from)
+
+        if price_to and not price_from:
+            price_q = Q(price__lte=price_to)
+
+        if price_from and price_to:
+            price_q = Q(price__gte=price_from, price__lte=price_to)
+
+        return self.query.filter(price_q).select_related('category', 'author')
+
     def save_image(self, id: int, image):
         ad: Ad = self.get_by_id(id)
 

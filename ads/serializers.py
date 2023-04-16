@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ads.models import Ad, Category, User
+from ads.models import Ad, Category, User, Location
 from .container import location_dao
 
 class AdListSerializer(serializers.ModelSerializer):
@@ -75,6 +75,13 @@ class DeleteAdSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 user_exclude = ['password']
+
+class UserListSerializer(serializers.ModelSerializer):
+    location = serializers.CharField(source='location.name', read_only=True)
+    total_ads = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = User
+        exclude = user_exclude
 class UserSerializer(serializers.ModelSerializer):
     location = serializers.CharField(source='location.name', read_only=True)
 
@@ -130,3 +137,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             user.save()
         
         return user
+    
+class LocationDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = '__all__'
