@@ -1,14 +1,15 @@
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import ListAPIView
-from django.http import HttpRequest
 from django.db.models import Count, Q
+from rest_framework.viewsets import ModelViewSet
+
+from .container import location_dao
 from .models import User
-from .serializers import UserSerializer, LocationDetailSerializer
-from .container import user_dao, location_dao
+from .serializers import LocationDetailSerializer, UserSerializer
+
 
 class LocationViewSet(ModelViewSet):
     queryset = location_dao.get_all()
     serializer_class = LocationDetailSerializer
+
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()

@@ -1,19 +1,21 @@
 from django.http import HttpRequest, JsonResponse
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.decorators import api_view
 from rest_framework.filters import OrderingFilter
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
 
 from .container import ads_dao, categories_dao
 from .serializers import (AdListSerializer, CategoryListSerializer,
                           CreateAdSerializer, CreateCategorySerializer,
                           DeleteAdSerializer, DeleteCategorySerializer,
                           DetailAdSerializer, DetailCategorySerializer,
-                          UpdateAdSerializer, UpdateCategorySerializer,
-                        )
+                          UpdateAdSerializer, UpdateCategorySerializer)
 
 
 def home(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"status": "ok"})
+
 
 @api_view(['POST'])
 def upload_image(request: HttpRequest, pk: int) -> JsonResponse:
@@ -21,15 +23,13 @@ def upload_image(request: HttpRequest, pk: int) -> JsonResponse:
 
     if not image:
         return JsonResponse({"status": "error", "message": "No image"})
-    
+
     try:
         ad = ads_dao.save_image(pk, image)
 
         return JsonResponse(DetailAdSerializer(ad).data)
     except ads_dao.DoesNotExistError():
         return JsonResponse({"status": "error", "message": "Ad does not exist"})
-
-
 
 
 class AdsListView(ListAPIView):
@@ -42,7 +42,7 @@ class AdsListView(ListAPIView):
         categories = request.GET.getlist('category', None)
         text = request.GET.get('text', None)
         location = request.GET.get('location', None)
-        price_from  = request.GET.get('price_from', None)
+        price_from = request.GET.get('price_from', None)
         price_to = request.GET.get('price_to', None)
 
         if price_from:
@@ -50,7 +50,6 @@ class AdsListView(ListAPIView):
 
         if price_to:
             price_to = int(price_to)
-
 
         if categories:
             categories = list(map(int, categories))
@@ -64,7 +63,6 @@ class AdsListView(ListAPIView):
 
         if price_from or price_to:
             self.queryset = ads_dao.get_by_price(price_from, price_to)
-        
 
         return super().get(request, *args, **kwargs)
 
@@ -95,6 +93,7 @@ class DetailCategoryView(RetrieveAPIView):
     queryset = categories_dao.get_all()
     serializer_class = DetailCategorySerializer
     lookup_field = 'pk'
+
 
 class UpdateAdView(UpdateAPIView):
     queryset = ads_dao.get_all()
