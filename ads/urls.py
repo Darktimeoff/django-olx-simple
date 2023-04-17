@@ -1,9 +1,6 @@
 from django.urls import path
 from ads import views
-from rest_framework.routers import SimpleRouter
 
-router = SimpleRouter()
-router.register(r'location', views.LocationViewset)
 
 ads = [
     path('ad/', views.AdsListView.as_view()),
@@ -22,12 +19,5 @@ cat = [
     path('cat/<int:pk>/delete/', views.DeleteCategoryView.as_view()),
 ]
 
-user = [
-    path('user/', views.ListUserView.as_view()),
-    path('user/create/', views.CreateUserView.as_view()),
-    path('user/<int:pk>/', views.DetailUserView.as_view()),
-    path('user/<int:pk>/update/', views.UpdateUserView.as_view()),
-    path('user/<int:pk>/delete/', views.DeleteUserView.as_view()),
-]
 
-urlpatterns = ads + cat + user + router.urls
+urlpatterns = ads + cat

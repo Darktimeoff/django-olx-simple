@@ -1,18 +1,14 @@
 from django.http import HttpRequest, JsonResponse
-from django.db.models import Count, Q
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.decorators import api_view
 from rest_framework.filters import OrderingFilter
-from rest_framework.viewsets import ModelViewSet
 
-from .container import ads_dao, categories_dao,user_dao, location_dao
+from .container import ads_dao, categories_dao
 from .serializers import (AdListSerializer, CategoryListSerializer,
                           CreateAdSerializer, CreateCategorySerializer,
                           DeleteAdSerializer, DeleteCategorySerializer,
                           DetailAdSerializer, DetailCategorySerializer,
                           UpdateAdSerializer, UpdateCategorySerializer,
-                          UserSerializer, CreateUserSerializer,
-                          UpdateUserSerializer, UserListSerializer, LocationDetailSerializer
                         )
 
 
@@ -122,36 +118,3 @@ class DeleteCategoryView(DestroyAPIView):
     queryset = categories_dao.get_all()
     serializer_class = DeleteCategorySerializer
     lookup_field = 'pk'
-
-class ListUserView(ListAPIView):
-    queryset = user_dao.get_all()
-    serializer_class = UserListSerializer
-
-    def get(self, request: HttpRequest, *args, **kwargs):
-        annotate = {
-            'total_ads': Count('ads', filter=Q(ads__is_published=True), distinct=True),
-        }
-
-        self.queryset = self.queryset.annotate(**annotate)
-
-        return super().get(request, *args, **kwargs)
-
-class DetailUserView(RetrieveAPIView):
-    queryset = user_dao.get_all()
-    serializer_class = UserSerializer
-
-class CreateUserView(CreateAPIView):
-    queryset = user_dao.get_all()
-    serializer_class = CreateUserSerializer
-
-class UpdateUserView(UpdateAPIView):
-    queryset = user_dao.get_all()
-    serializer_class = UpdateUserSerializer
-
-class DeleteUserView(DestroyAPIView):
-    queryset = user_dao.get_all()
-    serializer_class = CreateUserSerializer
-
-class LocationViewset(ModelViewSet):
-    queryset = location_dao.get_all()
-    serializer_class = LocationDetailSerializer

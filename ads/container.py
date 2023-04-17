@@ -1,6 +1,4 @@
-from ads.dao import AdsDao, CategoriesDao, UserDao, LocationDao
+from ads.dao import AdsDao, CategoriesDao
 
 ads_dao = AdsDao()
 categories_dao = CategoriesDao()
-user_dao = UserDao('username')
-location_dao = LocationDao()

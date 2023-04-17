@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from ads.models import Ad, Category, User, Location
-from .container import location_dao
+from ads.models import Ad, Category
 
 class AdListSerializer(serializers.ModelSerializer):
     author = serializers.CharField(
@@ -72,73 +71,4 @@ class DeleteCategorySerializer(serializers.ModelSerializer):
 class DeleteAdSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ad
-        fields = '__all__'
-
-user_exclude = ['password']
-
-class UserListSerializer(serializers.ModelSerializer):
-    location = serializers.CharField(source='location.name', read_only=True)
-    total_ads = serializers.IntegerField(read_only=True)
-    class Meta:
-        model = User
-        exclude = user_exclude
-class UserSerializer(serializers.ModelSerializer):
-    location = serializers.CharField(source='location.name', read_only=True)
-
-    class Meta:
-        model = User
-        exclude = user_exclude
-    
-
-class CreateUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
-
-    def is_valid(self, raise_exception=False):
-        if 'location' in self.initial_data:
-            self._location = self.initial_data.pop('location')
-        return super().is_valid(raise_exception=raise_exception)
-    
-    def create(self, validated_data):
-        user = super().create(validated_data)
-        print('create', user)
-
-        if hasattr(self, '_location'):
-            location  = location_dao.get_by_name(self._location)
-            user.location = location
-            user.save()
-        
-        return user
-    
-class UpdateUserSerializer(serializers.ModelSerializer):
-    first_name = serializers.CharField(required=False)
-    last_name = serializers.CharField(required=False)
-    username = serializers.CharField(required=False)
-    password = serializers.CharField(required=False)
-    age = serializers.IntegerField(required=False)
-    location = serializers.CharField(source='location.name', read_only=True)
-
-    class Meta:
-        model = User
-        fields = '__all__'
-
-    def is_valid(self, raise_exception=False):
-        if 'location' in self.initial_data:
-            self._location = self.initial_data.pop('location')
-        return super().is_valid(raise_exception=raise_exception)
-    
-    def save(self, *args, **kwargs):
-        user = super().save(*args, **kwargs)
-
-        if hasattr(self, '_location'):
-            location  = location_dao.get_by_name(self._location)
-            user.location = location
-            user.save()
-        
-        return user
-    
-class LocationDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
         fields = '__all__'

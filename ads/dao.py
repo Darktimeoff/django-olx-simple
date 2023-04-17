@@ -1,30 +1,33 @@
 from django.db.models import Model
 from django.db.models.manager import BaseManager
-from ads.models import Category, Ad, User, Location
+from ads.models import Category, Ad
 from django.db.models import Q
+from typing import TypeVar, Generic, Type
 
-class Dao:
-    query: BaseManager[Model]
+T = TypeVar('T')
 
-    def __init__(self, model, ordering=None):
+class Dao(Generic[T]):
+    query: BaseManager[T]
+
+    def __init__(self, model: Type[T], ordering=None):
         self.query = model.objects.all()
         if ordering:
             self.query = self.query.order_by(ordering)
         
 
-    def get_all(self):
+    def get_all(self) -> BaseManager[T]:
         return self.query.all()
     
-    def get_by_id(self, id: int):
+    def get_by_id(self, id: int) -> T:
         """raise DoesNotExist exception if not found"""
         return self.query.get(pk=id)
     
 
-class CategoriesDao(Dao):
+class CategoriesDao(Dao[Category]):
     def __init__(self):
         super().__init__(Category)
 
-class AdsDao(Dao):
+class AdsDao(Dao[Ad]):
     def __init__(self):
         super().__init__(Ad)
 
@@ -64,25 +67,3 @@ class AdsDao(Dao):
         ad.save()
 
         return ad
-    
-class UserDao(Dao):
-    def __init__(self, ordering=None):
-        super().__init__(User, ordering)
-
-    def get_all(self):
-        return super().get_all().select_related('location')
-    
-    def save_location(self, id: int, location: Location):
-        user: User = self.get_by_id(id)
-
-        user.location = location
-        user.save()
-
-        return user
-    
-class LocationDao(Dao):
-    def __init__(self):
-        super().__init__(Location)
-
-    def get_by_name(self, name: str):
-        return self.query.get(name=name)

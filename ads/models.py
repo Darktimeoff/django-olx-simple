@@ -1,46 +1,6 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.text import slugify
-
-
-class Location(models.Model):
-    class Meta:
-        verbose_name_plural = 'Locations'
-
-    name = models.CharField(max_length=100)
-
-    lng = models.DecimalField(max_digits=9, decimal_places=6)
-    lat = models.DecimalField(max_digits=9, decimal_places=6)
-
-    def __str__(self):
-        return self.name
-
-
-class User(models.Model):
-    ROLE = [
-        ('admin', 'Admin'),
-        ('moderator', 'Moderator'),
-        ('member', 'Member'),
-    ]
-
-    class Meta:
-        verbose_name_plural = 'Users'
-
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
-    username = models.CharField(max_length=45, unique=True)
-    password = models.CharField(max_length=100)
-
-    age = models.IntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(100)])
-
-    role = models.CharField(max_length=10, choices=ROLE, default='member')
-
-    location = models.ForeignKey(
-        Location, null=True, on_delete=models.SET_NULL, related_name='users')
-
-    def __str__(self):
-        return self.first_name + ' ' + self.last_name
+from authentication.models import User
 
 
 class Category(models.Model):
