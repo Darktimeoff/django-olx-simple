@@ -13,7 +13,7 @@ from .serializers import (AdListSerializer, CategoryListSerializer,
                           DetailAdSerializer, DetailCategorySerializer,
                           UpdateAdSerializer, UpdateCategorySerializer,
                           SelectionSerializer, SelectionListSerializer, SelectionDetailSerializer)
-from .permissions import SelectionUpdatePermission
+from .permissions import SelectionUpdatePermission, AdUpdatePermission
 
 def home(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"status": "ok"})
@@ -102,6 +102,7 @@ class UpdateAdView(UpdateAPIView):
     queryset = ads_dao.get_all()
     serializer_class = UpdateAdSerializer
     lookup_field = 'pk'
+    permission_classes = [IsAuthenticated, AdUpdatePermission]
 
 
 class UpdateCategoryView(UpdateAPIView):
@@ -114,6 +115,7 @@ class DeleteAdView(DestroyAPIView):
     queryset = ads_dao.get_all()
     serializer_class = DeleteAdSerializer
     lookup_field = 'pk'
+    permission_classes = [IsAuthenticated, AdUpdatePermission]
 
 
 class DeleteCategoryView(DestroyAPIView):
