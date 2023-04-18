@@ -18,11 +18,14 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = super().create(validated_data)
         user.set_password(user.password)
+        print('create', user)
 
         if hasattr(self, '_location'):
             location  = location_dao.get_by_name(self._location)
             user = user_dao.save_location(user.id, location)
         
+        user.save()
+
         return user
 
     

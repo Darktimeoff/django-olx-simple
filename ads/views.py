@@ -4,6 +4,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      ListAPIView, RetrieveAPIView,
                                      UpdateAPIView)
+from rest_framework.permissions import IsAuthenticated
 
 from .container import ads_dao, categories_dao
 from .serializers import (AdListSerializer, CategoryListSerializer,
@@ -87,6 +88,7 @@ class CreateCategoryView(CreateAPIView):
 class DetailAdView(RetrieveAPIView):
     queryset = ads_dao.get_all()
     serializer_class = DetailAdSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class DetailCategoryView(RetrieveAPIView):
