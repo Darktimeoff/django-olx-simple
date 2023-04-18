@@ -44,3 +44,15 @@ class Ad(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name, allow_unicode=True)
         super(Ad, self).save(*args, **kwargs)
+
+class Selection(models.Model):
+    class Meta:
+        verbose_name_plural = 'Selections'
+
+    name  = models.CharField(max_length=100)
+
+    items = models.ManyToManyField(Ad, related_name='selections', default=None)
+
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='selections'
+    )

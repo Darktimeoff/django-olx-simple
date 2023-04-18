@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from ads.models import Ad, Category
+from .models import Ad, Category, Selection
+from .container import selection_dao, categories_dao
 
 class AdListSerializer(serializers.ModelSerializer):
     author = serializers.CharField(
@@ -72,3 +73,35 @@ class DeleteAdSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ad
         fields = '__all__'
+
+class SelectionSerializer(serializers.ModelSerializer):
+    # items = serializers.SlugRelatedField(many=True)
+
+    class Meta:
+        model = Selection
+        fields = '__all__'
+
+    def is_valid(self, raise_exception=False):
+        if 'items' in self.initial_data:
+            self._items: list[int] = self.initial_data.pop('items')
+
+        return super().is_valid(raise_exception=raise_exception)
+
+    def create(self, validated_data):
+        selection = super().create(validated_data)
+
+        if hasattr(self, '_items'):
+            selection = selection_dao.add_items(selection.id, self._items)
+
+        return selection
+
+class SelectionDetailSerializer(serializers.ModelSerializer):
+    items = AdListSerializer(many=True, read_only=True)
+    class Meta:
+        model = Selection
+        fields = ['id', 'items']
+    
+class SelectionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Selection
+        fields = ['id', 'name']

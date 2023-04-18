@@ -6,13 +6,14 @@ from rest_framework.generics import (CreateAPIView, DestroyAPIView,
                                      UpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
 
-from .container import ads_dao, categories_dao
+from .container import ads_dao, categories_dao, selection_dao
 from .serializers import (AdListSerializer, CategoryListSerializer,
                           CreateAdSerializer, CreateCategorySerializer,
                           DeleteAdSerializer, DeleteCategorySerializer,
                           DetailAdSerializer, DetailCategorySerializer,
-                          UpdateAdSerializer, UpdateCategorySerializer)
-
+                          UpdateAdSerializer, UpdateCategorySerializer,
+                          SelectionSerializer, SelectionListSerializer, SelectionDetailSerializer)
+from .permissions import SelectionUpdatePermission
 
 def home(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"status": "ok"})
@@ -119,3 +120,27 @@ class DeleteCategoryView(DestroyAPIView):
     queryset = categories_dao.get_all()
     serializer_class = DeleteCategorySerializer
     lookup_field = 'pk'
+
+class CreateSelectionView(CreateAPIView):
+    queryset = selection_dao.get_all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated]
+    
+class DetailSelectionView(RetrieveAPIView):
+    queryset = selection_dao.get_all()
+    serializer_class = SelectionDetailSerializer
+    
+class ListSelectionView(ListAPIView):
+    queryset = selection_dao.get_all()
+    serializer_class = SelectionListSerializer
+
+class UpdateSelectionView(UpdateAPIView):
+    queryset = selection_dao.get_all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated, SelectionUpdatePermission]
+
+
+class DeleteSelectionView(DestroyAPIView):
+    queryset = selection_dao.get_all()
+    serializer_class = SelectionSerializer
+    permission_classes = [IsAuthenticated, SelectionUpdatePermission]

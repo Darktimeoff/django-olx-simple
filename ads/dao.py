@@ -1,6 +1,6 @@
 from django.db.models import Model
 from django.db.models.manager import BaseManager
-from ads.models import Category, Ad
+from ads.models import Category, Ad, Selection
 from django.db.models import Q
 from typing import TypeVar, Generic, Type
 
@@ -67,3 +67,26 @@ class AdsDao(Dao[Ad]):
         ad.save()
 
         return ad
+    
+class SelectionDao(Dao[Selection]):
+    def __init__(self, ordering = None):
+        super().__init__(Selection, ordering)
+
+    def get_all(self):
+        return super().get_all().select_related('owner').prefetch_related('items')
+
+    def add_items(self, id: int, items: list[int]):
+        selection  = self.get_by_id(id)
+        selection.items.add(*items)
+
+        selection.save()
+
+        return selection
+
+    def add_item(self, id: int, item: int):
+        selection  = self.get_by_id(id)
+        selection.items.add(item)
+
+        selection.save()
+
+        return selection

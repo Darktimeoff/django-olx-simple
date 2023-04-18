@@ -19,5 +19,13 @@ cat = [
     path('cat/<int:pk>/delete/', views.DeleteCategoryView.as_view()),
 ]
 
+selection = [
+    path('selection/', views.ListSelectionView.as_view()),
+    path('selection/create/', views.CreateSelectionView.as_view()),
+    path('selection/<int:pk>/', views.DetailSelectionView.as_view()),
+    path('selection/<int:pk>/update/', views.UpdateSelectionView.as_view()),
+    path('selection/<int:pk>/delete/', views.DeleteSelectionView.as_view()),
+]
 
-urlpatterns = ads + cat
+
+urlpatterns = ads + cat + selection
