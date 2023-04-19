@@ -1,21 +1,35 @@
 import pytest
 
 @pytest.mark.django_db
-def test_create_user(client, user_expected_resp, user_request):
+def test_user_login(client, user_request):
+    expected_response = ['access', 'refresh']
+
     response = client.post(
-        '/api/v1/user/',
-       {
-        "username": "test",
-        "password": "test",
-       },
-       format='json'
+        '/api/v1/user/token/',
+        data=user_request,
+        format='json'
     )
-    user_expected_resp['id'] = response.json().get('id', None)
-    user_expected_resp['date_joined'] = response.json().get('date_joined', None)
-    user_expected_resp['password'] = response.json().get('password', None)
-   
-    assert response.status_code == 201
-    assert response.json() == user_expected_resp
+
+    assert response.status_code == 200
+    assert set(response.json().keys()) == set(expected_response)
+
+@pytest.mark.django_db
+def test_pytest_user_login_not_found(client):
+    expected_response = {
+        "detail": "No active account found with the given credentials"
+    }
+
+    response = client.post(
+        '/api/v1/user/token/',
+        data={
+            'username': 'not_found',
+            'password': 'not_found'
+        },
+        format='json'
+    )
+
+    assert response.status_code == 401
+    assert response.json() == expected_response
 
 @pytest.mark.django_db
 def test_without_password(client, user_request, user_required_validation):
@@ -24,9 +38,9 @@ def test_without_password(client, user_request, user_required_validation):
     expected_response = user_required_validation
 
     response = client.post(
-        '/api/v1/user/',
+        '/api/v1/user/token/',
         {
-            'username': '1'
+            'username': user_request['username']
         },
         format='json'
     )
@@ -40,7 +54,7 @@ def test_without_username(client, user_request, user_required_validation):
     expected_response = user_required_validation
      
     response = client.post(
-        '/api/v1/user/',
+        '/api/v1/user/token/',
         {
             'password':  user_request['password']
         },
@@ -53,7 +67,7 @@ def test_without_username(client, user_request, user_required_validation):
 @pytest.mark.django_db
 def test_empty_request(client, user_required_validation):
     response = client.post(
-        '/api/v1/user/',
+        '/api/v1/user/token/',
         {
         },
         format='json'
