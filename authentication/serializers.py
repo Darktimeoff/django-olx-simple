@@ -8,7 +8,8 @@ class UserSerializer(serializers.ModelSerializer):
     locations = serializers.SlugRelatedField(
         many=True,
         queryset=location_dao.get_all(),
-        slug_field='name'
+        slug_field='name',
+        required=False
     )
     class Meta:
         model = User
