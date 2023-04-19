@@ -5,7 +5,11 @@ from .container import location_dao, user_dao
 
 class UserSerializer(serializers.ModelSerializer):
     total_ads = serializers.IntegerField(read_only=True, required=False)
-
+    locations = serializers.SlugRelatedField(
+        many=True,
+        queryset=location_dao.get_all(),
+        slug_field='name'
+    )
     class Meta:
         model = User
         fields = '__all__'

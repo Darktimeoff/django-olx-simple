@@ -36,7 +36,7 @@ class User(AbstractUser):
 
     age = models.PositiveIntegerField(default=0)
 
-    locations = models.ManyToManyField(Location, default=None)
+    locations = models.ManyToManyField(Location, default=[])
 
     class Meta:
         verbose_name = "Пользователь"
